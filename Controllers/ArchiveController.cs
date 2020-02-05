@@ -30,16 +30,18 @@ namespace OneTooXRestArchiveTest.Controllers
         {
             _logger.LogInformation($"{nameof(Post)}: Received ArchiveMessage with JobId: {archiveMessage.JobId}");
             // Validate message
-            if (!archiveMessage.ArchiveCategory.StartsWith("Category"))
-            {
-                return BadRequest("Bad category");
-            }
+            if (!archiveMessage.ArchiveCategory?.StartsWith("Category") ?? true)
+                return BadRequest(new ProblemDetails
+                {
+                    Detail = $"The supplied category '{archiveMessage.ArchiveCategory}' is not valid",
+                    Title = "Bad category"
+                });
 
             Directory.CreateDirectory(_settings.Value.ArchiveFolder);
 
             System.IO.File.WriteAllBytes(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveMessage.JobId}.pdf"), archiveMessage.MainDocument.DocumentData);
 
-            // Don't save documents in JSON or XML
+            // Don't save document data in JSON or XML
             archiveMessage.MainDocument.DocumentData = null;
             if (archiveMessage.Addendums != null) foreach (var addendum in archiveMessage.Addendums) addendum.DocumentData = null;
 
@@ -47,7 +49,7 @@ namespace OneTooXRestArchiveTest.Controllers
             using (var fs = new FileStream(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveMessage.JobId}.xml"), FileMode.Create))
                 new XmlSerializer(typeof(ArchiveMessage)).Serialize(fs, archiveMessage);
 
-            return Ok(new ResponseMessage { ResponseCode = 0, Message = "OK" });
+            return Ok();
         }
     }
 }
