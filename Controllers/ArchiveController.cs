@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.Json;
 using System.Xml.Serialization;
 using Microsoft.AspNetCore.Authorization;
@@ -83,18 +84,17 @@ namespace OneTooXRestArchiveTest.Controllers
                 });
 
             Directory.CreateDirectory(_settings.Value.ArchiveFolder);
-
-            System.IO.File.WriteAllBytes(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveMessage.JobId}.pdf"), archiveMessage.MainDocument.DocumentData);
+            var archiveId = Guid.NewGuid();
+            System.IO.File.WriteAllBytes(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveId}.pdf"), archiveMessage.MainDocument.DocumentData);
 
             // Don't save document data in JSON or XML
             archiveMessage.MainDocument.DocumentData = null;
             if (archiveMessage.Addendums != null) foreach (var addendum in archiveMessage.Addendums) addendum.DocumentData = null;
 
-            System.IO.File.WriteAllText(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveMessage.JobId}.json"), JsonSerializer.Serialize(archiveMessage));
-            using (var fs = new FileStream(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveMessage.JobId}.xml"), FileMode.Create))
+            System.IO.File.WriteAllText(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveId}.json"), JsonSerializer.Serialize(archiveMessage));
+            using (var fs = new FileStream(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveId}.xml"), FileMode.Create))
                 new XmlSerializer(typeof(ArchiveMessage)).Serialize(fs, archiveMessage);
-
-            return Ok();
+            return Ok($"Archive ID: {archiveId}");
         }
     }
 }

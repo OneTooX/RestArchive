@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.PlatformAbstractions;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using OneTooXRestArchiveTest.Security;
 using OneTooXRestArchiveTest.User;
@@ -42,7 +41,7 @@ namespace OneTooXRestArchiveTest
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1.0", new OpenApiInfo { Title = "OneTooX Archive API", Version = "v1.0" });
-                c.IncludeXmlComments(XmlCommentsFilePath);
+                foreach (var xml in XmlCommentsFilePaths) c.IncludeXmlComments(xml);
             });
         }
 
@@ -69,14 +68,7 @@ namespace OneTooXRestArchiveTest
             });
         }
 
-        private static string XmlCommentsFilePath
-        {
-            get
-            {
-                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                var fileName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name + ".xml";
-                return Path.Combine(basePath, fileName);
-            }
-        }
+        private static IEnumerable<string> XmlCommentsFilePaths
+            => Directory.EnumerateFiles(PlatformServices.Default.Application.ApplicationBasePath, "OneTooX*.xml", SearchOption.AllDirectories);
     }
 }
