@@ -14,16 +14,20 @@ steps:
   inputs:
     command: 'publish'
     arguments: '-r win-x64 --self-contained false /p:PublishSingleFile=true /p:AssemblyName=RestArchiveService -o $(Build.ArtifactStagingDirectory)/win-x64/'
+    modifyOutputPath: false
 - task: DotNetCoreCLI@2
   displayName: Build for linux
   inputs:
     command: 'publish'
     arguments: '-r linux-x64 --self-contained false /p:PublishSingleFile=true /p:AssemblyName=RestArchiveService -o $(Build.ArtifactStagingDirectory)/linux/'
+    zipAfterPublish: false
 - task: DotNetCoreCLI@2
   displayName: Build for osx
   inputs:
     command: 'publish'
     arguments: '-r osx-x64 --self-contained false /p:PublishSingleFile=true /p:AssemblyName=RestArchiveService -o $(Build.ArtifactStagingDirectory)/osx/'
+    zipAfterPublish: false
+    modifyOutputPath: false
 - task: PublishBuildArtifacts@1
   displayName: Publish
   inputs:
