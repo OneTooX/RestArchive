@@ -10,20 +10,25 @@ variables:
 name: $(major).$(minor).$(Rev:r)
 steps:
 - task: DotNetCoreCLI@2
-  displayName: Build for windows
+  displayName: 'build'
+  inputs:
+    command: 'build'
+    projects: 'OneTooXRestArchiveTest.csproj'
+- task: DotNetCoreCLI@2
+  displayName: publish windows
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: 'OneTooXRestArchiveTest.csproj'
+    projects: 
     arguments: '-r win-x64 --self-contained false /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/win-x64/'
 - task: DotNetCoreCLI@2
-  displayName: Build for linux
+  displayName: Publish linux
   inputs:
     command: 'publish'
     arguments: '-r linux-x64 --self-contained false /p:PublishSingleFile=true /p:AssemblyName=RestArchiveService -o $(Build.ArtifactStagingDirectory)/linux/'
     zipAfterPublish: false
 - task: DotNetCoreCLI@2
-  displayName: Build for osx
+  displayName: Publish osx
   inputs:
     command: 'publish'
     arguments: '-r osx-x64 --self-contained false /p:PublishSingleFile=true /p:AssemblyName=RestArchiveService -o $(Build.ArtifactStagingDirectory)/osx/'
