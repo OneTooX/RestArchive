@@ -10,29 +10,50 @@ variables:
 name: $(major).$(minor).$(Rev:r)
 steps:
 - task: DotNetCoreCLI@2
-  displayName: 'build'
-  inputs:
-    command: 'build'
-    projects: 'OneTooXRestArchiveTest.csproj'
-- task: DotNetCoreCLI@2
   displayName: publish windows
   inputs:
     command: 'publish'
-    publishWebProjects: false
-    arguments: '-r win-x64 --self-contained false /p:PublishSingleFile=true'
+    arguments: '-r win-x64 --self-contained false /p:PublishSingleFile=true /p:AssemblyName=RestArchiveService -o $(Build.BinariesDirectory)/win/'
+    zipAfterPublish: false
+    modifyOutputPath: false
+- task: ArchiveFiles@2
+  displayName: zip win files
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)/win'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildId)-win-x64.zip'
+    replaceExistingArchive: true
 - task: DotNetCoreCLI@2
   displayName: Publish linux
   inputs:
     command: 'publish'
-    arguments: '-r linux-x64 --self-contained false /p:PublishSingleFile=true /p:AssemblyName=RestArchiveService -o $(Build.ArtifactStagingDirectory)/linux/'
+    arguments: '-r linux-x64 --self-contained false /p:PublishSingleFile=true /p:AssemblyName=RestArchiveService -o $(Build.BinariesDirectory)/linux/'
     zipAfterPublish: false
+    modifyOutputPath: false
+- task: ArchiveFiles@2
+  displayName: zip linux files
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)/linux'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildId)-linux-x64.zip'
+    replaceExistingArchive: true
 - task: DotNetCoreCLI@2
   displayName: Publish osx
   inputs:
     command: 'publish'
-    arguments: '-r osx-x64 --self-contained false /p:PublishSingleFile=true /p:AssemblyName=RestArchiveService -o $(Build.ArtifactStagingDirectory)/osx/'
+    arguments: '-r osx-x64 --self-contained false /p:PublishSingleFile=true /p:AssemblyName=RestArchiveService -o $(Build.BinariesDirectory)/osx/'
     zipAfterPublish: false
     modifyOutputPath: false
+- task: ArchiveFiles@2
+  displayName: zip osx files
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)/osx'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildId)-osx-x64.zip'
+    replaceExistingArchive: true
 - task: PublishBuildArtifacts@1
   displayName: Publish
   inputs:
