@@ -13,9 +13,10 @@ steps:
   displayName: Build for windows
   inputs:
     command: 'publish'
-    arguments: '-r win-x64 --self-contained false /p:AssemblyName=RestArchiveService -o $(Build.ArtifactStagingDirectory)/win-x64/'
-#    zipAfterPublish: false
-#    modifyOutputPath: false
+    publishWebProjects: false
+    arguments: '-r win-x64 --self-contained false /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/win-x64/'
+    zipAfterPublish: true
+    modifyOutputPath: false
 - task: DotNetCoreCLI@2
   displayName: Build for linux
   inputs:
