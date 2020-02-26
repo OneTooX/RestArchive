@@ -19,7 +19,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    arguments: '-r win-x64 --self-contained false /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/win-x64/'
+    arguments: '-r win-x64 --self-contained false /p:PublishSingleFile=true'
 - task: DotNetCoreCLI@2
   displayName: Publish linux
   inputs:
