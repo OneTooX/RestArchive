@@ -22,7 +22,7 @@ steps:
     rootFolderOrFile: '$(Build.BinariesDirectory)/win'
     includeRootFolder: false
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildId)-win-x64.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildNumber)-win-x64.zip'
     replaceExistingArchive: true
 - task: DotNetCoreCLI@2
   displayName: Publish linux
@@ -37,7 +37,7 @@ steps:
     rootFolderOrFile: '$(Build.BinariesDirectory)/linux'
     includeRootFolder: false
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildId)-linux-x64.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildNumber)-linux-x64.zip'
     replaceExistingArchive: true
 - task: DotNetCoreCLI@2
   displayName: Publish osx
@@ -52,7 +52,7 @@ steps:
     rootFolderOrFile: '$(Build.BinariesDirectory)/osx'
     includeRootFolder: false
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildId)-osx-x64.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildNumber)-osx-x64.zip'
     replaceExistingArchive: true
 - task: PublishBuildArtifacts@1
   displayName: Publish
