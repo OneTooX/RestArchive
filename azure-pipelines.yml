@@ -14,7 +14,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: '**/*.csproj'
+    projects: 'OneTooXRestArchiveTest.csproj'
     arguments: '-r win-x64 --self-contained false /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/win-x64/'
 - task: DotNetCoreCLI@2
   displayName: Build for linux
