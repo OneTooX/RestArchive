@@ -1,0 +1,31 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+    major: 1
+    minor: 0
+name: $(major).$(minor).$(Rev:r)
+steps:
+- task: DotNetCoreCLI@2
+  displayName: Build for windows
+  inputs:
+    command: 'publish'
+    arguments: '-r win-x64 --self-contained false /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/win'
+- task: DotNetCoreCLI@2
+  displayName: Build for linux
+  inputs:
+    command: 'publish'
+    arguments: '-r linux-x64 --self-contained false /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/linux'
+- task: DotNetCoreCLI@2
+  displayName: Build for osx
+  inputs:
+    command: 'publish'
+    arguments: '-r osx-x64 --self-contained false /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/osx'
+- task: PublishBuildArtifacts@1
+  displayName: Publish
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: Package
