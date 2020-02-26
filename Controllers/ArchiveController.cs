@@ -13,7 +13,6 @@ namespace OneTooXRestArchiveTest.Controllers
     [Authorize]
     [ApiVersion("1.0")]
     [ApiController]
-    [Route("api/[controller]")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class ArchiveController : ControllerBase
     {
@@ -85,10 +84,13 @@ namespace OneTooXRestArchiveTest.Controllers
 
             Directory.CreateDirectory(_settings.Value.ArchiveFolder);
             var archiveId = Guid.NewGuid();
-            System.IO.File.WriteAllBytes(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveId}.pdf"), archiveMessage.MainDocument.DocumentData);
-
-            // Don't save document data in JSON or XML
-            archiveMessage.MainDocument.DocumentData = null;
+            if (archiveMessage.MainDocument?.DocumentData != null)
+            {
+                System.IO.File.WriteAllBytes(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveId}.pdf"),
+                    archiveMessage.MainDocument.DocumentData);
+                // Don't save document data in JSON or XML
+                archiveMessage.MainDocument.DocumentData = null;
+            }
             if (archiveMessage.Addendums != null) foreach (var addendum in archiveMessage.Addendums) addendum.DocumentData = null;
 
             System.IO.File.WriteAllText(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveId}.json"), JsonSerializer.Serialize(archiveMessage));
