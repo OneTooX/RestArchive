@@ -12,6 +12,8 @@ using OneTooX.RestPush.Model;
 
 namespace OneTooXRestArchiveTest.Controllers
 {
+    using Microsoft.AspNetCore.Http;
+
     [Authorize]
     [ApiVersion("1.0")]
     [ApiController]
@@ -59,6 +61,8 @@ namespace OneTooXRestArchiveTest.Controllers
         /// <param name="archiveMessage"></param>
         /// <returns></returns>
         [HttpPost]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public IActionResult Post([FromBody] ArchiveMessage archiveMessage)
         {
             _logger.LogInformation($"{nameof(Post)}: Received ArchiveMessage with JobId: {archiveMessage.JobId}");
