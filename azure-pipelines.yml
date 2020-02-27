@@ -26,7 +26,6 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'custom'
-    projects: '$(Projects)'
     custom: 'swagger'
     arguments: 'tofile --host "http:example.com" --outputfile $(Build.ArtifactStagingDirectory)/openapi/RestArchiveService-v1.0.json **/OneTooXRestArchiveTest.dll v1.0'
 - task: DotNetCoreCLI@2
