@@ -87,5 +87,5 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: Publish
   inputs:
-    pathToPublish: 
+    pathToPublish: $(Build.ArtifactStagingDirectory)
     artifactName: Package
