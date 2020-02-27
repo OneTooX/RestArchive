@@ -2,10 +2,12 @@
 using System.IO;
 using System.Text.Json;
 using System.Xml.Serialization;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using OneTooX.RestPush.Model;
 
 namespace OneTooXRestArchiveTest.Controllers
@@ -52,6 +54,8 @@ namespace OneTooXRestArchiveTest.Controllers
         /// </li>
         /// </dl>
         /// </remarks>
+        /// <verb>POST</verb>
+        /// <url>https://localhost:5000/api/v1.0/Archive</url>
         /// <param name="archiveMessage"></param>
         /// <returns></returns>
         [HttpPost]
