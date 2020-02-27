@@ -10,6 +10,28 @@ variables:
 name: $(major).$(minor).$(Rev:r)
 steps:
 - task: DotNetCoreCLI@2
+  displayName: build
+  inputs:
+    command: 'build'
+    arguments: '-o $(Build.BinariesDirectory)/openapi/'
+- task: BuildOpenApiDocument@0
+  displayName: Generate Open API docs
+  inputs:
+    serviceName: 'RestArchiveService'
+    visualStudioXmlDocumentationFileNamePatterns: '$(Build.BinariesDirectory)/openapi/**/OneTooX*.xml'
+    assemblyFileNamePatterns: '$(Build.BinariesDirectory)/openapi/**/OneTooX*.dll'
+    openApiSpecificationVersion: '3.0'
+    format: 'json'
+    outputDirectoryPath: '$(Build.ArtifactStagingDirectory)/OpenAPI'
+    createOutputDirectoryIfNotExists: true
+    useCamelCaseForSchemaProperties_CsharpAnnotationsDocumentGenerationSetting: true
+    fallbackToPowerShell: true
+    openApiDocumentVersion: '$(Build.BuildNumber)'
+    visualStudioXmlSearchPath: '$(Build.SourcesDirectory)'
+    failOnMultipleVisualStudioXmlMatches: true
+    assemblyFileSearchPath: '$(Build.SourcesDirectory)'
+    failOnMultipleAssemblyFileMatches: true
+- task: DotNetCoreCLI@2
   displayName: publish windows
   inputs:
     command: 'publish'
@@ -54,6 +76,8 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildNumber)-osx-x64.zip'
     replaceExistingArchive: true
+
+
 - task: PublishBuildArtifacts@1
   displayName: Publish
   inputs:
