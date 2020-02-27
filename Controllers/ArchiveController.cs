@@ -17,7 +17,8 @@ namespace OneTooXRestArchiveTest.Controllers
     [Authorize]
     [ApiVersion("1.0")]
     [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/v1.0/[controller]")]
+    /// <url>https://localhost:5000/api/v1.0/Archive</url>
     public class ArchiveController : ControllerBase
     {
         private readonly ILogger<ArchiveController> _logger;
@@ -57,7 +58,6 @@ namespace OneTooXRestArchiveTest.Controllers
         /// </dl>
         /// </remarks>
         /// <verb>POST</verb>
-        /// <url>https://localhost:5000/api/v1.0/Archive</url>
         /// <param name="archiveMessage"></param>
         /// <returns></returns>
         [HttpPost]

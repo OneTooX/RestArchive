@@ -33,7 +33,6 @@
             </dl>
             </remarks>
             <verb>POST</verb>
-            <url>https://localhost:5000/api/v1.0/Archive</url>
             <param name="archiveMessage"></param>
             <returns></returns>
         </member>
