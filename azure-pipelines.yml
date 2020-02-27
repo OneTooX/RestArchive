@@ -27,7 +27,7 @@ steps:
   inputs:
     command: 'custom'
     custom: 'swagger'
-    arguments: 'tofile --host "http:example.com" --outputfile $(Build.ArtifactStagingDirectory)/openapi/RestArchiveService-v1.0.json $(Build.BinariesDirectory)/openapi/OneTooXRestArchiveTest.dll v1.0'
+    arguments: 'tofile --host "http://example.com" --output $(Build.ArtifactStagingDirectory)/openapi/RestArchiveService-v1.0.json $(Build.BinariesDirectory)/openapi/OneTooXRestArchiveTest.dll v1.0'
 - task: DotNetCoreCLI@2
   displayName: publish windows
   inputs:
