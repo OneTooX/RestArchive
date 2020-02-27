@@ -64,7 +64,7 @@ namespace OneTooXRestArchiveTest.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
 
-        public IActionResult Post([FromQuery] ArchiveMessage archiveMessage)
+        public IActionResult Post([FromBody] ArchiveMessage archiveMessage)
         {
             _logger.LogInformation($"{nameof(Post)}: Received ArchiveMessage with JobId: {archiveMessage.JobId}");
 
