@@ -5,32 +5,30 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-    major: 1
-    minor: 0
-name: $(major).$(minor).$(Rev:r)
+    Major: 1
+    Minor: 0
+    BuildConfiguration: release
+    Projects: '**/*.csproj'
+name: $(Major).$(Minor).$(Rev:r)
 steps:
 - task: DotNetCoreCLI@2
-  displayName: build
+  displayName: install swagger.cli
+  inputs:
+    command: 'custom'
+    custom: 'tool'
+    arguments: 'install swashbuckle.aspnetcore.cli --version 5.0.0'
+- task: DotNetCoreCLI@2
+  displayName: Build for OpenAPI docs generation
   inputs:
     command: 'build'
-    arguments: '-o $(Build.BinariesDirectory)/openapi/'
-- task: BuildOpenApiDocument@0
-  displayName: Generate Open API docs
+    projects: $(Projects)
+    arguments: '--configuration $(BuildConfiguration)'
+- task: DotNetCoreCLI@2
   inputs:
-    serviceName: 'RestArchiveService'
-    visualStudioXmlDocumentationFileNamePatterns: '$(Build.BinariesDirectory)/openapi/**/OneTooX*.xml'
-    assemblyFileNamePatterns: '$(Build.BinariesDirectory)/openapi/**/OneTooX*.dll'
-    openApiSpecificationVersion: '3.0'
-    format: 'json'
-    outputDirectoryPath: '$(Build.ArtifactStagingDirectory)/OpenAPI'
-    createOutputDirectoryIfNotExists: true
-    useCamelCaseForSchemaProperties_CsharpAnnotationsDocumentGenerationSetting: true
-    fallbackToPowerShell: true
-    openApiDocumentVersion: '$(Build.BuildNumber)'
-    visualStudioXmlSearchPath: '$(Build.SourcesDirectory)'
-    failOnMultipleVisualStudioXmlMatches: true
-    assemblyFileSearchPath: '$(Build.SourcesDirectory)'
-    failOnMultipleAssemblyFileMatches: true
+    command: 'custom'
+    projects: '$(Projects)'
+    custom: 'swagger'
+    arguments: 'tofile --host "http:example.com" --outputfile $(Build.ArtifactStagingDirectory)/openapi/RestArchiveService-v1.0.json **/OneTooXRestArchiveTest.dll v1.0'
 - task: DotNetCoreCLI@2
   displayName: publish windows
   inputs:
@@ -81,5 +79,5 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: Publish
   inputs:
-    pathToPublish: $(Build.ArtifactStagingDirectory)
+    pathToPublish: 
     artifactName: Package
