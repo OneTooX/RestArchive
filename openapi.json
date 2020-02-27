@@ -1,0 +1,504 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OneTooX Archive API",
+    "version": "v1.0"
+  },
+  "paths": {
+    "/api/v1.0/Archive": {
+      "post": {
+        "tags": [
+          "Archive"
+        ],
+        "summary": "Post the archive message.",
+        "description": "The Content-Type header must be set and correspond to the content of the body.\r\n<br />\r\nUse the Accept header to control the format of the response. Possible values are application/json (default) and application/xml.\r\n<br /><br />\r\nIf the invocation succeeds HTTP status code 200 is returned.\r\n<br />\r\nIf the invocation fails a problem details object is returned. The problem details object follows the guidelines in <a href=\"https://tools.ietf.org/html/rfc7807\">RFC-7807</a>.\r\nThe following problem types are explicitly supported by the archive client:\r\n<dl><li><dt>https://onetoox.dk/unknown-receiver</dt><dd>The receiver is not known in the receiving system</dd></li><li><dt>https://onetoox.dk/invalid-archive-category</dt><dd>The archive category is not valid</dd></li><li><dt>https://onetoox.dk/validation-error</dt><dd>Validation error. The specific error is described by the title and detail attributes</dd></li></dl>",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArchiveMessage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArchiveMessage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArchiveMessage"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/ArchiveMessage"
+              }
+            },
+            "text/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/ArchiveMessage"
+              }
+            },
+            "application/*+xml": {
+              "schema": {
+                "$ref": "#/components/schemas/ArchiveMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Document": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "description": "The content type of the document. Currently only application/pdf is supported.",
+            "nullable": true
+          },
+          "documentData": {
+            "type": "string",
+            "description": "The contents of the document.",
+            "format": "byte",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the document.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "A Document represents the main document of a job or an addendum."
+      },
+      "JobStatus": {
+        "enum": [
+          0,
+          1,
+          3,
+          11,
+          99
+        ],
+        "type": "integer",
+        "description": "The status of the job.\r\n<table><tr><td>0</td><td>Waiting to get delivered to one or more channels.</td></tr><tr><td>1</td><td>Delivered to all channels.</td></tr><tr><td>3</td><td>The job has been cancelled and will not be delivered.</td></tr><tr><td>99</td><td>A fatal error has occurred and the job will not be delivered.</td></tr><tr><td>11</td><td>Delivery was not possible and this was acceptable for the channel.</td></tr></table>",
+        "format": "int32"
+      },
+      "Channel": {
+        "enum": [
+          1,
+          2,
+          3,
+          5,
+          7,
+          8,
+          9,
+          10
+        ],
+        "type": "integer",
+        "description": "The main channel of the job.\r\n<table><tr><td>1</td><td>e-Boks.</td></tr><tr><td>2</td><td>Remote print.</td></tr><tr><td>3</td><td>Addendum.</td></tr><tr><td>5</td><td>Digital Post.</td></tr><tr><td>7</td><td>Local Print.</td></tr><tr><td>8</td><td>Archive.</td></tr><tr><td>9</td><td>Email.</td></tr><tr><td>10</td><td>e-Boks Ekspres.</td></tr></table>",
+        "format": "int32"
+      },
+      "ChannelResolution": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "description": "The delivery resolution of the channel. The value is Accepted if delivery is mandatory.\r\n<table><tr><td>0</td><td>Accepted.</td></tr><tr><td>1</td><td>Not delivered due to no receiver.</td></tr><tr><td>2</td><td>Not delivered due to invalid receiver format.</td></tr><tr><td>3</td><td>Not delivered due to receiver not being registered in the receiving system.</td></tr></table>",
+        "format": "int32"
+      },
+      "ReceiverType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "description": "The type of receiver of the job.\r\n<table><tr><td>0</td><td>No receiver.</td></tr><tr><td>1</td><td>Person.</td></tr><tr><td>2</td><td>Company.</td></tr><tr><td>3</td><td>Email.</td></tr></table>",
+        "format": "int32"
+      },
+      "AttentionInfo": {
+        "type": "object",
+        "properties": {
+          "pNummer": {
+            "type": "string",
+            "description": "The P-nummer of the receiver.",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "description": "The e-mail of the receiver.",
+            "nullable": true
+          },
+          "personNavn": {
+            "type": "string",
+            "description": "The name of the receiver.",
+            "nullable": true
+          },
+          "enhedsNavn": {
+            "type": "string",
+            "description": "The OU of the receiver.",
+            "nullable": true
+          },
+          "primaerKlasse": {
+            "type": "string",
+            "description": "FORM code (public classification).",
+            "nullable": true
+          },
+          "sekundaerKlasse": {
+            "type": "string",
+            "description": "KLE code or similar (public classification).",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "AttentionInfo contains data related to the Digital Post AttentionFormat - see https://digst.dk/media/16810/vejledning-i-anvendelse-af-attentionformatet.pdf."
+      },
+      "MailPriority": {
+        "enum": [
+          1,
+          2
+        ],
+        "type": "integer",
+        "description": "The mail priority of the job.\r\n<table><tr><td>1</td><td>Priority.</td></tr><tr><td>2</td><td>Economy.</td></tr></table>",
+        "format": "int32"
+      },
+      "ArchiveMessage": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "integer",
+            "description": "The ID of the delivery job.",
+            "format": "int32"
+          },
+          "parentJobId": {
+            "type": "integer",
+            "description": "The ID of the parent job, if any. Used for mail merges. The value is 0 if there is no parent.",
+            "format": "int32"
+          },
+          "createTime": {
+            "type": "string",
+            "description": "The time of creation of the job.",
+            "format": "date-time"
+          },
+          "customerId": {
+            "type": "string",
+            "description": "The ID of the customer that the user belongs to.",
+            "nullable": true
+          },
+          "division": {
+            "type": "string",
+            "description": "The name of the division that the user belongs to.",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "description": "The ID of the user that sent the job.",
+            "nullable": true
+          },
+          "mainDocument": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Document"
+              }
+            ],
+            "description": "The main document.",
+            "nullable": true
+          },
+          "addendums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Document"
+            },
+            "description": "The list of addendums, if any.",
+            "nullable": true
+          },
+          "fixedAddendumName": {
+            "type": "string",
+            "description": "The name of the fixed addendum, if any.",
+            "nullable": true
+          },
+          "archiveCaseId": {
+            "type": "string",
+            "description": "The case ID used for archiving, if any.",
+            "nullable": true
+          },
+          "archiveCategory": {
+            "type": "string",
+            "description": "The category for archiving.",
+            "nullable": true
+          },
+          "archiveDescription": {
+            "type": "string",
+            "description": "The description for archiving, if any.",
+            "nullable": true
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/JobStatus"
+              }
+            ],
+            "description": "The status of the job."
+          },
+          "channel": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Channel"
+              }
+            ],
+            "description": "The main channel of the job."
+          },
+          "channelResolution": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChannelResolution"
+              }
+            ],
+            "description": "The resolution of the main channel of the job."
+          },
+          "clientAddress": {
+            "type": "string",
+            "description": "The IP address of the client delivering the job.",
+            "nullable": true
+          },
+          "clientInfo": {
+            "type": "string",
+            "description": "Information on the client delivering the job. For non-webservice delivery this is the user agent of the client browser.",
+            "nullable": true
+          },
+          "clientVersion": {
+            "type": "string",
+            "description": "The version of the client. For non-webservice delivery this is the version of the OneTooX server.",
+            "nullable": true
+          },
+          "isColorPrint": {
+            "type": "boolean",
+            "description": "Determines if color was used for remote printing."
+          },
+          "receiver": {
+            "type": "string",
+            "description": "The ID of the receiver, e.g. a civil registration no. or a CBR no.",
+            "nullable": true
+          },
+          "receiverType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReceiverType"
+              }
+            ],
+            "description": "The type of the receiver."
+          },
+          "attentionInfo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AttentionInfo"
+              }
+            ],
+            "description": "The AttentionInfo, if any.",
+            "nullable": true
+          },
+          "customerText": {
+            "type": "string",
+            "description": "The customer-specified text, if any.",
+            "nullable": true
+          },
+          "digitalDestinationCountry": {
+            "type": "string",
+            "description": "ISO code of the destination country for digital delivery. Currently only DK is supported.",
+            "nullable": true
+          },
+          "digitalPostReceipt": {
+            "type": "string",
+            "description": "The receipt from Digital Post, if this is the main channel.",
+            "nullable": true
+          },
+          "documentType": {
+            "type": "string",
+            "description": "The document type used for creating the job.",
+            "nullable": true
+          },
+          "digitalPostResponse": {
+            "type": "string",
+            "description": "The Digital Post response address that the receiver can reply to if supplied.",
+            "nullable": true
+          },
+          "digitalPostResponseSubject": {
+            "type": "string",
+            "description": "The subject belonging to the Digital Post response address.",
+            "nullable": true
+          },
+          "materialId": {
+            "type": "string",
+            "description": "The Digital Post material ID, if Digital Post is the main channel.",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the job.",
+            "nullable": true
+          },
+          "isArchived": {
+            "type": "boolean",
+            "description": "Determines if the job is archived."
+          },
+          "isDuplex": {
+            "type": "boolean",
+            "description": "Determines if the document is printed in duplex, if sent to remote print or local print."
+          },
+          "mailPriority": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MailPriority"
+              }
+            ],
+            "description": "The mail priority, if sent to remote print."
+          },
+          "totalNumberOfPages": {
+            "type": "integer",
+            "description": "The total number of pages in the main document and addendums.",
+            "format": "int32"
+          },
+          "totalNumberOfSheets": {
+            "type": "integer",
+            "description": "The total number of sheets in the main document and addendums.",
+            "format": "int32"
+          },
+          "totalSize": {
+            "type": "integer",
+            "description": "The total size in bytes of the main document and addendums.",
+            "format": "int32"
+          },
+          "outputSystem": {
+            "type": "string",
+            "description": "The output system that was used to deliver the delivery.",
+            "nullable": true
+          },
+          "postalDestinationCountry": {
+            "type": "string",
+            "description": "ISO code of the destination country for postal delivery.",
+            "nullable": true
+          },
+          "sendingSystem": {
+            "type": "string",
+            "description": "The name of the system that sent the document",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "The message containing the job metadata, document and addendums."
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      }
+    },
+    "securitySchemes": {
+      "basic": {
+        "type": "http",
+        "description": "Basic Authentication.",
+        "scheme": "basic"
+      }
+    }
+  },
+  "security": [
+    {
+      "basic": [ ]
+    }
+  ]
+}
