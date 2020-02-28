@@ -9,6 +9,7 @@ variables:
     Minor: 0
     BuildConfiguration: release
     Projects: '**/*.csproj'
+    OpenApiFilename: 'RestArchiveService-v1.0.json'
 name: $(Major).$(Minor).$(Rev:r)
 steps:
 - task: DotNetCoreCLI@2
@@ -22,12 +23,20 @@ steps:
   inputs:
     command: 'build'
     projects: $(Projects)
-    arguments: '--configuration $(BuildConfiguration)'
+    arguments: '--configuration $(BuildConfiguration) -o $(Build.BinariesDirectory)/openapi'
 - task: DotNetCoreCLI@2
+  displayName: Create OpenAPI docs
   inputs:
     command: 'custom'
     custom: 'swagger'
-    arguments: 'tofile --host "http:example.com" --outputfile $(Build.ArtifactStagingDirectory)/openapi/RestArchiveService-v1.0.json **/OneTooXRestArchiveTest.dll v1.0'
+    arguments: 'tofile --host "http://example.com" --output $(Build.BinariesDirectory)/openapi/$(OpenApiFilename) $(Build.BinariesDirectory)/openapi/OneTooXRestArchiveTest.dll v1.0'
+# Copy of file is necessary as dotnet swagger tofile cannot create a new folder
+- task: CopyFiles@2
+  displayName: Copy OpenAPI docs to artifacts
+  inputs:
+    SourceFolder: '$(Build.BinariesDirectory)/openapi'
+    Contents: '$(OpenApiFilename)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/openapi'
 - task: DotNetCoreCLI@2
   displayName: publish windows
   inputs:
@@ -78,5 +87,5 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: Publish
   inputs:
-    pathToPublish: 
+    pathToPublish: $(Build.ArtifactStagingDirectory)
     artifactName: Package
