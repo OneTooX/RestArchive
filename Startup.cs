@@ -41,7 +41,14 @@ namespace OneTooXRestArchiveTest
             });
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1.0", new OpenApiInfo { Title = "OneTooX Archive API", Version = "v1.0" });
+                c.SwaggerDoc("v1.0", new OpenApiInfo
+                {
+                    Title = "OneTooX Archive API",
+                    Version = "v1.0",
+                    Description = "The OneTooX Archive API allows a customer to receive a copy of the processed job data from OneTooX.",
+                    Contact = new OpenApiContact { Name = "OneTooX Support", Email = "onetoox@charlietango.dk", Url = new Uri("https://www.charlietango.dk/") },
+                    License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://github.com/OneTooX/RestArchive/blob/master/LICENSE.TXT") }
+                });
                 foreach (var xml in XmlCommentsFilePaths) c.IncludeXmlComments(xml);
 
                 c.AddSecurityDefinition("basic", new OpenApiSecurityScheme

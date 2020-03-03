@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Text.Json;
 using System.Xml.Serialization;
@@ -14,11 +15,11 @@ namespace OneTooXRestArchiveTest.Controllers
 {
     using Microsoft.AspNetCore.Http;
 
+    /// <url>https://localhost:5000/api/v1.0/Archive</url>
     [Authorize]
     [ApiVersion("1.0")]
     [ApiController]
     [Route("api/v1.0/[controller]")]
-    /// <url>https://localhost:5000/api/v1.0/Archive</url>
     public class ArchiveController : ControllerBase
     {
         private readonly ILogger<ArchiveController> _logger;
@@ -35,12 +36,13 @@ namespace OneTooXRestArchiveTest.Controllers
         /// </summary>
         /// <remarks>
         /// The Content-Type header must be set and correspond to the content of the body.
-        /// <br/>
+        ///
         /// Use the Accept header to control the format of the response. Possible values are application/json (default) and application/xml.
-        /// <br/><br/>
+        ///
         /// If the invocation succeeds HTTP status code 200 is returned.
-        /// <br/>
-        /// If the invocation fails a problem details object is returned. The problem details object follows the guidelines in <a href="https://tools.ietf.org/html/rfc7807">RFC-7807</a>.
+        ///
+        /// If the invocation fails a problem details object is returned. The problem details object follows the guidelines in https://tools.ietf.org/html/rfc7807.
+        /// 
         /// The following problem types are explicitly supported by the archive client:
         /// <dl>
         /// <li>
@@ -60,11 +62,11 @@ namespace OneTooXRestArchiveTest.Controllers
         /// <verb>POST</verb>
         /// <param name="archiveMessage"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost(Name = "Post")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
 
-        public IActionResult Post([FromBody] ArchiveMessage archiveMessage)
+        public IActionResult Post([FromBody][Required] ArchiveMessage archiveMessage)
         {
             _logger.LogInformation($"{nameof(Post)}: Received ArchiveMessage with JobId: {archiveMessage.JobId}");
 
