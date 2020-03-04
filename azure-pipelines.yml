@@ -26,21 +26,23 @@ steps:
     command: 'build'
     projects: $(Projects)
     arguments: '--configuration $(BuildConfiguration) -o $(OpenApi.WorkingFolder)'
-# Create folder here as dotnet swagger tofile cannot create a new folder
-- task: CmdLine@2
-  displayName: Create OpenAPI staging folder
-  inputs:
-    script: 'mkdir $(OpenApi.StagingFolder)'
 - task: DotNetCoreCLI@2
   displayName: Create OpenAPI JSON doc
   inputs:
     command: 'custom'
     custom: 'swagger'
-    arguments: 'tofile --host "http://example.com" --output $(OpenApi.StagingFolder)/$(OpenApi.JsonFilename) $(OpenApi.WorkingFolder)/OneTooXRestArchiveTest.dll v1.0'
+    arguments: 'tofile --host "http://example.com" --output $(OpenApi.WorkingFolder)/$(OpenApi.JsonFilename) $(OpenApi.WorkingFolder)/OneTooXRestArchiveTest.dll v1.0'
 - task: CmdLine@2
   displayName: Generate HTML doc
   inputs:
-    script: npx @openapitools/openapi-generator-cli generate -i $(OpenApi.StagingFolder)/$(OpenApi.JsonFilename) -g html -o $(OpenApi.StagingFolder)
+    script: npx @openapitools/openapi-generator-cli generate -i $(OpenApi.WorkingFolder)/$(OpenApi.JsonFilename) -g html -o $(OpenApi.WorkingFolder)
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(OpenApi.WorkingFolder)'
+    Contents: |
+      $(OpenApi.JsonFilename)
+      index.html
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/openapi'
 - task: DotNetCoreCLI@2
   displayName: publish windows
   inputs:
@@ -86,8 +88,6 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/RestArchiveService-$(Build.BuildNumber)-osx-x64.zip'
     replaceExistingArchive: true
-
-
 - task: PublishBuildArtifacts@1
   displayName: Publish
   inputs:
