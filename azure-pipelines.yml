@@ -40,7 +40,7 @@ steps:
 - task: CmdLine@2
   displayName: Generate HTML doc
   inputs:
-    script: npx @openapitools/openapi-generator-cli generate -i $(OpenApi.WorkingFolder)/$(OpenApi.JsonFilename) -g html -o $(OpenApi.StagingFolder)
+    script: npx @openapitools/openapi-generator-cli generate -i $(OpenApi.StagingFolder)/$(OpenApi.JsonFilename) -g html -o $(OpenApi.StagingFolder)
 - task: DotNetCoreCLI@2
   displayName: publish windows
   inputs:
