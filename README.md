@@ -1,2 +1,2 @@
 # RestArchive
-Rest archive integration for OnetooX
+Rest archive integration for OneTooX
