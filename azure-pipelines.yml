@@ -42,7 +42,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: true
-    arguments: '-r win-x64'
+    arguments: '-r win-x64 -o $(Build.ArtifactStagingDirectory)/WinWebDeploy/'
 - task: DotNetCoreCLI@2
   displayName: publish windows
   inputs:
