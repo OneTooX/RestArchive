@@ -38,6 +38,12 @@ steps:
     Contents: '$(OpenApiFilename)'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/openapi'
 - task: DotNetCoreCLI@2
+  displayName: publish for webdeploy
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '-r win-x64'
+- task: DotNetCoreCLI@2
   displayName: publish windows
   inputs:
     command: 'publish'
