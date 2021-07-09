@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,11 +10,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.OpenApi.Models;
+
 using OneTooXRestArchiveTest.Security;
 using OneTooXRestArchiveTest.User;
 
 namespace OneTooXRestArchiveTest
 {
+    using Microsoft.Extensions.FileProviders;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -28,6 +31,7 @@ namespace OneTooXRestArchiveTest
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<ArchiveControllerSettings>(Configuration);
+            services.AddDirectoryBrowser();
             services.AddControllers().AddXmlSerializerFormatters();
             services.AddScoped<IUserService, UserService>();
             services.AddAuthentication("BasicAuthentication")
@@ -78,6 +82,14 @@ namespace OneTooXRestArchiveTest
                 app.UseDeveloperExceptionPage();
             }
 
+            var archiveFolder = Configuration.GetValue<string>("ArchiveFolder");
+            if (!Path.IsPathRooted(archiveFolder)) archiveFolder = Path.Combine(env.WebRootPath, archiveFolder);
+            app.UseDirectoryBrowser(
+                new DirectoryBrowserOptions
+                {
+                    FileProvider = new PhysicalFileProvider(Path.GetFullPath(archiveFolder)),
+                    RequestPath = "/Archived"
+                });
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
