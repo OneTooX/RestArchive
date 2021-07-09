@@ -16,6 +16,8 @@ using OneTooXRestArchiveTest.User;
 
 namespace OneTooXRestArchiveTest
 {
+    using System.Diagnostics;
+
     using Microsoft.Extensions.FileProviders;
 
     public class Startup
@@ -83,7 +85,14 @@ namespace OneTooXRestArchiveTest
             }
 
             var archiveFolder = Configuration.GetValue<string>("ArchiveFolder");
-            if (!Path.IsPathRooted(archiveFolder)) archiveFolder = Path.Combine(env.WebRootPath, archiveFolder);
+            if (!Path.IsPathRooted(archiveFolder)) archiveFolder = Path.Combine(env.WebRootPath ?? Directory.GetCurrentDirectory(), archiveFolder);
+            Trace.TraceInformation($"Setting /archived/ to '{archiveFolder}'");
+            app.UseStaticFiles(
+                new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(Path.GetFullPath(archiveFolder)),
+                    RequestPath = "/Archived"
+                });
             app.UseDirectoryBrowser(
                 new DirectoryBrowserOptions
                 {
