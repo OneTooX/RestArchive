@@ -68,28 +68,11 @@ namespace OneTooXRestArchiveTest.Controllers
         {
             _logger.LogInformation($"{nameof(Post)}: Received ArchiveMessage with JobId: {archiveMessage.JobId}");
 
-            // Example validation
-            if (archiveMessage.Receiver?.Length != 10)
-                return BadRequest(new ProblemDetails
-                {
-                    Type = "https://onetoox.dk/validation-error",
-                    Detail = $"The format of the receiver '{archiveMessage.Receiver}' is not valid",
-                    Title = "Invalid receiver format"
-                });
-            if ("1234560000" != archiveMessage.Receiver && "1122334455" != archiveMessage.ArchiveCategory)
-                return BadRequest(new ProblemDetails
-                {
-                    Type = "https://onetoox.dk/unknown-receiver",
-                    Detail = $"The receiver '{archiveMessage.Receiver}' is unknown",
-                    Title = "Unknown receiver"
-                });
-            if (!archiveMessage.ArchiveCategory?.StartsWith("Category") ?? true)
-                return BadRequest(new ProblemDetails
-                {
-                    Type = "https://onetoox.dk/invalid-archive-category",
-                    Detail = $"The category '{archiveMessage.ArchiveCategory}' is not valid",
-                    Title = "Invalid category"
-                });
+            if (_settings.Value.EnableTestValidation && Validate(archiveMessage) is { } prob)
+            {
+                _logger.LogWarning(prob.Detail);
+                return BadRequest(prob);
+            }
 
             Directory.CreateDirectory(_settings.Value.ArchiveFolder);
             var archiveId = Guid.NewGuid();
@@ -106,6 +89,41 @@ namespace OneTooXRestArchiveTest.Controllers
             using (var fs = new FileStream(Path.Combine(_settings.Value.ArchiveFolder, $"archiveDoc-{archiveId}.xml"), FileMode.Create))
                 new XmlSerializer(typeof(ArchiveMessage)).Serialize(fs, archiveMessage);
             return Ok($"Archive ID: {archiveId}");
+        }
+
+        private ProblemDetails Validate(ArchiveMessage archiveMessage)
+        {
+            // Example validation
+            if (archiveMessage.Receiver?.Length != 10)
+            {
+                return new ProblemDetails
+                {
+                    Type = "https://onetoox.dk/validation-error",
+                    Detail = $"The format of the receiver '{archiveMessage.Receiver}' is not valid",
+                    Title = "Invalid receiver format"
+                };
+            }
+
+            if ("1234560000" != archiveMessage.Receiver && "1122334455" != archiveMessage.ArchiveCategory)
+            {
+                return new ProblemDetails
+                {
+                    Type = "https://onetoox.dk/unknown-receiver",
+                    Detail = $"The receiver '{archiveMessage.Receiver}' is unknown",
+                    Title = "Unknown receiver"
+                };
+            }
+
+            if (!archiveMessage.ArchiveCategory?.StartsWith("Category") ?? true)
+            {
+                return new ProblemDetails
+                {
+                    Type = "https://onetoox.dk/invalid-archive-category",
+                    Detail = $"The category '{archiveMessage.ArchiveCategory}' is not valid",
+                    Title = "Invalid category"
+                };
+            }
+            return null;
         }
     }
 }
