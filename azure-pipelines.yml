@@ -12,6 +12,8 @@ variables:
     OpenApiFilename: 'RestArchiveService-v1.0.json'
 name: $(Major).$(Minor).$(Rev:r)
 steps:
+- script: dotnet tool install --global dotnet-xdt
+  displayName: Install XDT tool
 - task: DotNetCoreCLI@2
   displayName: install swagger.cli
   inputs:
@@ -37,6 +39,10 @@ steps:
     SourceFolder: '$(Build.BinariesDirectory)/openapi'
     Contents: '$(OpenApiFilename)'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/openapi'
+
+- script: dotnet xdt --source ./web.config --transform ./Web.Release.config --output ./web.config
+  displayName: Transform web.config
+
 - task: DotNetCoreCLI@2
   displayName: publish for webdeploy
   inputs:
