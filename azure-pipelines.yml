@@ -1,16 +1,16 @@
+variables:
+  BuildConfiguration: release
+  Projects: '**/*.csproj'
+  OpenApiFilename: 'RestArchiveService-v1.0.json'
+  ${{ if eq(length(split(variables['Build.SourceBranchName'], '.')), 2) }}:
+    otxVersion: '22.5'
+  ${{ else }}:
+    otxVersion: $[ format('{0:yy}.0', pipeline.startTime) ]
+name: $(otxVersion).$(Rev:r)
 trigger:
 - master
-
 pool:
   vmImage: 'ubuntu-latest'
-
-variables:
-    Major: 1
-    Minor: 0
-    BuildConfiguration: release
-    Projects: '**/*.csproj'
-    OpenApiFilename: 'RestArchiveService-v1.0.json'
-name: $(Major).$(Minor).$(Rev:r)
 steps:
 - script: dotnet tool install --global dotnet-xdt
   displayName: Install XDT tool
